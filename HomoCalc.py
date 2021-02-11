@@ -42,7 +42,7 @@ def demolish(number: str) -> str:
         n = len(re.search(r'\.([\d]*)$', number.strip('0')).group().strip('.'))
         return f'{"(" * n}({demolish(number.replace(".", ""))}){"/((10)))" * n}'
     elif bool(re.match(r'^-', number)):
-        return f'(-1)*({demolish(number[1:])})'
+        return f'((-1))*({demolish(number[1:])})'
     elif number in data.keys():
         return f'({number})'
     else:
