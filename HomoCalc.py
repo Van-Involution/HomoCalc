@@ -9,14 +9,14 @@ from mcdreforged.api.command import Literal, Number
 from mcdreforged.api.rtext import RTextBase, RText, RTextTranslation, RTextList, RAction
 
 PLUGIN_METADATA = {
-    'id': 'homo',
+    'id': 'homo_calculator',
     'version': '0.1.0',
-    'name': 'Homo',
+    'name': 'HomoCalc',
     'description': 'Use command "!!homo <number>" to get a homosexual expression formatted by 114514',
     'author': [
         'Van_Involution'
     ],
-    'link': 'https://github.com/Van-Involution/Homo',
+    'link': 'https://github.com/Van-Involution/HomoCalc',
     'dependencies': {
         'mcdreforged': '>=1.0.0',
     }
