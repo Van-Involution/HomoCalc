@@ -1,11 +1,11 @@
 # -*- coding: UTF-8 -*-
 
-from typing import Union, Dict
+from typing import Union, Dict, Any
 import json
 import re
 
 from mcdreforged.api.types import ServerInterface, CommandSource
-from mcdreforged.api.command import *
+from mcdreforged.api.command import Literal, GreedyText
 from mcdreforged.api.rtext import RText, RTextTranslation, RTextList, RColor, RAction
 
 PLUGIN_METADATA = {
@@ -65,8 +65,8 @@ def gen_expr(number: Union[int, float]) -> str:
     return homo.replace('+-', '-')
 
 
-def reply(src: CommandSource, ctx: dict):
-    expr = ctx['expr']  # type: str
+def reply(src: CommandSource, ctx: Dict[Union[str, Any], Union[str, Any]]):
+    expr = ctx['expr'].replace('//', '/')
     if not bool(re.search(r'[^\d. (+\-*/)]', expr)):
         try:
             num = eval(expr)  # type: Union[int, float]
@@ -77,13 +77,13 @@ def reply(src: CommandSource, ctx: dict):
             ))
         except Exception as e:
             src.get_server().logger.warning(e)
-            src.reply('§c这么恶臭的表达式还有计算的必要吗, 自裁罢(无慈悲§r')
+            src.reply(RText('这么恶臭的表达式还有计算的必要吗, 自裁罢(无慈悲', RColor.red))
     else:
-        src.reply('§c参数包含非法字符!§r')
+        src.reply(RText('参数包含非法字符!', RColor.red))
 
 
 def on_load(server: ServerInterface, prev):
     global data
     data = get_data(DEFAULT_DATA_PATH)
-    server.register_help_message(DEFAULT_PREFIX, RText('将输入的数或表达式转换成ホモ特有表达式').h('表达式参数支持Python格式的四则运算 (+-*/) 和乘方 (**)'))
+    server.register_help_message(DEFAULT_PREFIX, RText('将输入的数或表达式转换成ホモ特有表达式').h('表达式参数支持Python格式的四则运算(+-*/)和乘方(**)'))
     server.register_command(Literal(DEFAULT_PREFIX).runs(lambda src: src.reply(RText('请输入参数以生成表达式!', RColor.red))).then(GreedyText('expr').runs(reply)))
