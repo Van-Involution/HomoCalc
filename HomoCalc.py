@@ -4,15 +4,15 @@ from typing import Union, Dict
 import json
 import re
 
-from mcdreforged.api.types import ServerInterface
-from mcdreforged.api.command import Literal, Number
-from mcdreforged.api.rtext import RTextBase, RText, RTextTranslation, RTextList, RAction
+from mcdreforged.api.types import ServerInterface, CommandSource
+from mcdreforged.api.command import *
+from mcdreforged.api.rtext import RText, RTextTranslation, RTextList, RColor, RAction
 
 PLUGIN_METADATA = {
     'id': 'homo_calculator',
     'version': '0.1.0',
     'name': 'HomoCalc',
-    'description': 'Use command "!!homo <number>" to get a homosexual expression formatted by 114514',
+    'description': RText('通过 "!!homo <number>" 命令, 用114514生成ホモ特有表达式').h(RText('良い世, 来いよ', RColor.gold)),
     'author': [
         'Van_Involution'
     ],
@@ -36,13 +36,13 @@ def get_data(path: str) -> Dict[str, str]:
 
 def demolish(number: str) -> str:
     global data
-    if bool(re.search(r'\.(0*)$', number)):
-        return demolish(number.strip('0').strip('.'))
-    elif bool(re.search(r'\.([\d]*)$', number)):
-        n = len(re.search(r'\.([\d]*)$', number.strip('0')).group().strip('.'))
-        return f'{"(" * n}({demolish(number.replace(".", ""))}){"/((10)))" * n}'
-    elif bool(re.match(r'^-', number)):
-        return f'((-1))*({demolish(number[1:])})'
+    if bool(number.startswith('-')):
+        return f'-({demolish(number[1:])})'
+    elif bool(re.search(r'\.0*$', number)):
+        return demolish(re.sub(r'\.0*$', '', number))
+    elif bool(re.search(r'\.[\d]*$', number)):
+        n = len(re.search(r'\.[\d]*$', number.strip('0')).group().strip('.'))
+        return f'({demolish(number.replace(".", ""))})*((10))**({demolish(str(-n))})'
     elif number in data.keys():
         return f'({number})'
     else:
@@ -52,31 +52,38 @@ def demolish(number: str) -> str:
                 div = int(key)
                 break
         return re.sub(
-            r'(\*\(\(1\)\))|(\+\(0\))', '',
+            r'(\+\(0\))|(\*\(\(1\)\))', '',
             f'({div})*({demolish(str(int(number) // div))})+{demolish(str(int(number) % div))}'
         )
 
 
-def gen_expr(number: Union[int, float]) -> RTextBase:
+def gen_expr(number: Union[int, float]) -> str:
     global data
-    expr = demolish(str(number))
+    homo = demolish(str(number))
     for key, val in data.items():
-        expr = re.sub(r'\(' + key + r'\)', val, expr)
-    expr = re.sub(r'\+-', '-', expr)
-    return RTextList(
-        f'§7{str(number)}§r = ',
-        RText(expr).h(RTextTranslation('chat.copy.click')).c(RAction.copy_to_clipboard, expr)
-    )
+        homo = homo.replace(f'({key})', val)
+    return homo.replace('+-', '-')
+
+
+def reply(src: CommandSource, ctx: dict):
+    expr = ctx['expr']  # type: str
+    if not bool(re.search(r'[^\d. (+\-*/)]', expr)):
+        try:
+            num = eval(expr)  # type: Union[int, float]
+            homo = gen_expr(num)
+            src.reply(RTextList(
+                RText(re.sub(r'\.0*$', '', str(num)), RColor.gray).c(RAction.copy_to_clipboard, expr).h(expr),
+                ' = ', RText(homo).c(RAction.copy_to_clipboard, homo).h(RTextTranslation('chat.copy.click'))
+            ))
+        except Exception as e:
+            src.get_server().logger.warning(e)
+            src.reply('§c这么恶臭的表达式还有计算的必要吗, 自裁罢(无慈悲§r')
+    else:
+        src.reply('§c参数包含非法字符!§r')
 
 
 def on_load(server: ServerInterface, prev):
     global data
     data = get_data(DEFAULT_DATA_PATH)
-    server.register_help_message(DEFAULT_PREFIX, '用114514生成ホモ特有四则运算表达式')
-    server.register_command(
-        Literal(DEFAULT_PREFIX)
-        .then(
-            Number('num')
-            .runs(lambda src, ctx: src.reply(gen_expr(ctx['num'])))
-        )
-    )
+    server.register_help_message(DEFAULT_PREFIX, RText('将输入的数或表达式转换成ホモ特有表达式').h('表达式参数支持Python格式的四则运算 (+-*/) 和乘方 (**)'))
+    server.register_command(Literal(DEFAULT_PREFIX).runs(lambda src: src.reply(RText('请输入参数以生成表达式!', RColor.red))).then(GreedyText('expr').runs(reply)))
