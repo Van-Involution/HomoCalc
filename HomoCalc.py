@@ -1,5 +1,3 @@
-# -*- coding: UTF-8 -*-
-
 from typing import Union, Dict, Any
 import json
 import re
