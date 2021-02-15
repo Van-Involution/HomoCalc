@@ -8,7 +8,7 @@ from mcdreforged.api.rtext import RText, RTextTranslation, RTextList, RColor, RA
 
 PLUGIN_METADATA = {
     'id': 'homo_calculator',
-    'version': '1.0.0',
+    'version': '1.0.1',
     'name': 'HomoCalc',
     'description': RText('通过 "!!homo <number>" 命令, 用114514生成ホモ特有表达式').h(RText('良い世, 来いよ', RColor.gold)),
     'author': [
