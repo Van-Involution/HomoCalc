@@ -56,6 +56,12 @@ def demolish(number: str) -> str:
 
 
 def gen_expr(number: Union[int, float]) -> str:
+    """
+    Generate homo expression
+
+    :param number: A integer or float to 'demolish'
+    :return: A string of expression
+    """
     global data
     homo = demolish(str(number))
     for key, val in data.items():
