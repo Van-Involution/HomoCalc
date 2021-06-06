@@ -4,7 +4,7 @@
 
 > **注意**：HomoCalc 基于 [**MCDR v1.x**](https://github.com/Fallen-Breath/MCDReforged) 开发，并且**不支持** MCDR v0.x
 
-**HomoCalc** 是一个 MCDR 插件，移植了 [itoor](https://github.com/itorr)/[**homo**](https://github.com/itorr/homo) 的程序和数据到 MCDR 平台，提供将给定的数或表达式转化成**ホモ特有表达式**的命令 `!!homo`，以及可被其他插件调用的**ホモ特有表达式**生成器函数 `gen_expr()`。
+**HomoCalc** 是一个 MCDR 插件，移植了 [itoor](https://github.com/itorr) / [**homo**](https://github.com/itorr/homo) 的程序和数据到 MCDR 平台，提供将给定的数或表达式转化成**ホモ特有表达式**的命令 `!!homo`，以及可被其他插件调用的**ホモ特有表达式**生成器函数 `gen_expr()`。
 
 ## 安装插件
 
@@ -38,9 +38,11 @@ plugin_directories:
 
 ### 函数
 
-插件定义了一个可供引用的生成器函数：
+插件定义了一个可用于的生成恶臭表达式的函数：
 
 ```Python
-def gen_expr(number: Union[int, float]) -> str
+def gen_expr(number: Union[int, float]) -> str:
+    ...
 ```
+
 参数 `number` 是一个用于生成**ホモ特有表达式**的整数或浮点数。
