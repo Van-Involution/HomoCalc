@@ -12,9 +12,9 @@ PLUGIN_METADATA = {
     'name': 'HomoCalc',
     'description': RText('通过 "!!homo <number>" 命令, 用114514生成ホモ特有表达式').h(RText('良い世, 来いよ', RColor.gold)),
     'author': [
-        'Van_Involution'
+        'Van_Nya'
     ],
-    'link': 'https://github.com/Van-Involution/HomoCalc',
+    'link': 'https://github.com/Van-Nya/HomoCalc',
     'dependencies': {
         'mcdreforged': '>=1.0.0',
     }
